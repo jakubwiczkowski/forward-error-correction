@@ -9,15 +9,35 @@ class ReedSolomonCoder(Coder):
         pass
 
     def encode(self, data: list[int]) -> list[int]:
-        return [int(i) for i in bin(int.from_bytes(self.rsc.encode(bytes(data)), byteorder="big")).lstrip('0b')]
+        string = [self.convert_segment(data[i:i + 8]) for i in range(0, len(data), 8)]
+        encoded = self.rsc.encode(string)
+        output = list()
+        for byte in encoded:
+            output.append(format(byte, '08b'))
+        o = list()
+        for i in range(0, len(output)):
+            for bit in output[i]:
+                o.append(int(bit))
+        return o
+
+    def convert_segment(self, segment):
+        string = ''.join(str(bit) for bit in segment)
+        return int(string, 2)
 
     def decode(self, data: list[int]) -> list[int]:
-        output = list()
+        string = [self.convert_segment(data[i:i + 8]) for i in range(0, len(data), 8)]
         try:
-            output = [int(i) for i in bin(int.from_bytes(self.rsc.decode(data)[1], byteorder="big")).lstrip('0b')]
-        except ReedSolomonError:
-            output = data
-        return output
+            out, _, _ = self.rsc.decode(string)
+        except:
+            return "error"
+        output = list()
+        for byte in out:
+            output.append(format(byte, '08b'))
+        o = list()
+        for i in range(0, len(output)):
+            for bit in output[i]:
+                o.append(int(bit))
+        return o
 
     def name(self) -> str:
         return "RS - nie wiem"

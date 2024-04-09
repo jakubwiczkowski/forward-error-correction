@@ -1,11 +1,25 @@
+import time
+
 import numpy as np
-import komm
 
-np.random.seed(1)
+import model
+from model import BinarySymmetricChannel
+from model import GilbertElliotModel
 
-bsc = komm.BinarySymmetricChannel(0.1)
+np.random.seed(int(time.time()))
 
-x = [0, 1, 1, 1, 0, 0, 0, 0, 0, 1]
-y = bsc(x)
+x = list(np.random.randint(2, size=1000))
 
-print(y)
+print(f"Oryginalna tablica:     {x}")
+
+bsc = BinarySymmetricChannel(0.1)
+ge = GilbertElliotModel(0.2, 0.6, 0.7, 0.1)
+
+after_bsc = bsc.accept(x)
+after_ge = ge.accept(x)
+
+print(f"Kanał Gilberta-Elliota: {after_ge}")
+print(f"                   BER: {model.check_integrity(x, after_ge) * 100}%")
+print(f"Kanał BSC:              {after_bsc}")
+print(f"      BER:              {model.check_integrity(x, after_bsc) * 100}%")
+

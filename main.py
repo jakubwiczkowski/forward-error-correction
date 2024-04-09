@@ -1,25 +1,34 @@
 import time
 
+import komm
 import numpy as np
 
 import model
+from coder.bch.BCHCoder import BCHCoder
+from coder.triple.TripleCoder import TripleCoder
 from model import BinarySymmetricChannel
 from model import GilbertElliotModel
 
+coders = [TripleCoder(), BCHCoder(mu=5, delta=7)]
+models = [BinarySymmetricChannel(0.1), GilbertElliotModel(0.2, 0.8, 0.7, 0.01)]
+
 np.random.seed(int(time.time()))
-
-x = list(np.random.randint(2, size=1000))
-
+x = list(np.random.randint(2, size=16))
 print(f"Oryginalna tablica:     {x}")
 
-bsc = BinarySymmetricChannel(0.1)
-ge = GilbertElliotModel(0.2, 0.6, 0.7, 0.1)
+for coder in coders:
+    print("===========================")
+    print(f"# Koder {coder.name()}")
+    for channel in models:
+        print(f" > Kanał {channel.name()}")
+        encoded = coder.encode(x)
+        output = channel.accept(encoded)
+        decoded = coder.decode(output)
+        ber = model.check_integrity(x, decoded)
 
-after_bsc = bsc.accept(x)
-after_ge = ge.accept(x)
+        print(f"  - enc: {encoded}")
+        print(f"  - out: {output}")
+        print(f"  - dec: {decoded}")
+        print(f"  - BER: {ber * 100}%")
 
-print(f"Kanał Gilberta-Elliota: {after_ge}")
-print(f"                   BER: {model.check_integrity(x, after_ge) * 100}%")
-print(f"Kanał BSC:              {after_bsc}")
-print(f"      BER:              {model.check_integrity(x, after_bsc) * 100}%")
 

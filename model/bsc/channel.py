@@ -10,3 +10,6 @@ class BinarySymmetricChannel(Model):
 
     def accept(self, data: list[int]) -> list[int]:
         return list(self.channel(data))
+
+    def name(self) -> str:
+        return f"BSC - p = {self.p}"

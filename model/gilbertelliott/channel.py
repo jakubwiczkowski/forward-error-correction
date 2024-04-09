@@ -38,7 +38,7 @@ class GilbertElliotModel(Model):
                     self.state = State.GOOD
 
             output[idx] = y[0]
-
-
-
         return output
+
+    def name(self) -> str:
+        return f"Gilbert-Elliot - b = {self.b} / g = {self.g} / p_b = {self.p_b} / p_g = {self.p_g}"

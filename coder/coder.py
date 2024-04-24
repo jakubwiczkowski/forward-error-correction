@@ -7,3 +7,6 @@ class Coder:
 
     def name(self) -> str:
         pass
+
+    def parameters(self) -> str:
+        pass

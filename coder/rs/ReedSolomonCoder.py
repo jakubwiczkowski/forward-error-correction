@@ -5,6 +5,7 @@ from coder.coder import Coder
 
 class ReedSolomonCoder(Coder):
     def __init__(self, value: int):
+        self.value = value
         self.rsc = RSCodec(value)
         pass
 
@@ -29,7 +30,7 @@ class ReedSolomonCoder(Coder):
         try:
             out, _, _ = self.rsc.decode(string)
         except:
-            return "error"
+            return data
         output = list()
         for byte in out:
             output.append(format(byte, '08b'))
@@ -40,4 +41,7 @@ class ReedSolomonCoder(Coder):
         return o
 
     def name(self) -> str:
-        return "RS - nie wiem"
+        return "RS"
+
+    def parameters(self) -> str:
+        return f"{self.value}"        # liczba bajtów kontrolnych

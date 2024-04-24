@@ -12,4 +12,8 @@ class BinarySymmetricChannel(Model):
         return list(self.channel(data))
 
     def name(self) -> str:
-        return f"BSC - p = {self.p}"
+        return f"BSC"
+        # return f"BSC - p = {self.p}"
+
+    def parameters(self) -> str:
+        return f"{self.p};"

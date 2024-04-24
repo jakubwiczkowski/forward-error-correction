@@ -14,10 +14,10 @@ class State(Enum):
 class GilbertElliotModel(Model):
     def __init__(self, b: float, g: float, p_b: float, p_g: float):
         self.state = State.GOOD
-        self.b = b
-        self.g = g
-        self.p_b = p_b
-        self.p_g = p_g
+        self.b = b          # prawdopodobienstwo zmiany na zly stan
+        self.g = g          # prawdopodobienstwo zmiany na dobry stan
+        self.p_b = p_b      # prawdopodobienstwo przeklamania bitu w stanie zlym
+        self.p_g = p_g      # prawdopodobienstwo przeklamania bitu w stanie dobrym
 
         self.good_channel = komm.BinarySymmetricChannel(p_g)
         self.bad_channel = komm.BinarySymmetricChannel(p_b)
@@ -41,4 +41,8 @@ class GilbertElliotModel(Model):
         return output
 
     def name(self) -> str:
-        return f"Gilbert-Elliot - b = {self.b} / g = {self.g} / p_b = {self.p_b} / p_g = {self.p_g}"
+        return f"Gilbert-Elliot"
+        # return f"Gilbert-Elliot - b = {self.b} / g = {self.g} / p_b = {self.p_b} / p_g = {self.p_g}"
+
+    def parameters(self) -> str:
+        return f"{self.b}; {self.g}; {self.p_b}; {self.p_g};"

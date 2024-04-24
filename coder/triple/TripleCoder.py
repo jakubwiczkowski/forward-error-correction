@@ -41,3 +41,6 @@ class TripleCoder(Coder):
 
     def name(self) -> str:
         return "Potrojeniowy"
+
+    def parameters(self) -> str:
+        return ""

@@ -16,4 +16,8 @@ class BCHCoder(Coder):
         return list(self.decoder(data))
 
     def name(self) -> str:
-        return f"BCH - mu = {self.bch_code.mu} / delta = {self.bch_code.delta}"
+        return f"BCH"
+        # return f"BCH - mu = {self.bch_code.mu} / delta = {self.bch_code.delta}"
+
+    def parameters(self) -> str:
+        return f"{self.bch_code.mu}; {self.bch_code.delta}"

@@ -29,7 +29,7 @@ models = [BinarySymmetricChannel(*binary_symmetric_channel_good_params),
 models.reverse()
 
 np.random.seed(int(time.time()))
-x = list(np.random.randint(2, size=1024))
+x = list(np.random.randint(2, size=1048576))
 
 output_directory = "output_files"
 if not os.path.exists(output_directory):
@@ -41,8 +41,8 @@ for coder in coders:
         filepath = os.path.join(output_directory,
                                 f"{coder.name()}_{coder.parameters().replace(' ', '').replace(';', '_')}_{count}.txt")
         with open(filepath, "a") as file:
-            for i in range(50):
-                x = list(np.random.randint(2, size=np.random.randint(1024)))
+            for i in range(1):
+                x = list(np.random.randint(2, size=np.random.randint(1048576)))
 
                 try:
                     encoded = coder.encode(x)
@@ -177,7 +177,7 @@ plt.scatter(x_Gilbert_bad, y_Gilbert_bad, color='orange', label='Gilbert-Elliot 
 for i, txt in enumerate(titles_Gilbert_bad):
     plt.annotate(txt, (x_Gilbert_bad[i], y_Gilbert_bad[i]))
 plt.xlabel('Average BER')
-plt.ylabel('Average Exceed')
+plt.ylabel('Average Excess')
 plt.title('Gilbert-Elliot Bad State')
 plt.legend()
 plt.grid(True)

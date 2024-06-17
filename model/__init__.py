@@ -3,8 +3,8 @@ from .bsc.channel import BinarySymmetricChannel
 
 
 def check_integrity(original: list[int], after_channel: list[int]) -> float:
-    if len(original) != len(after_channel):
-        return 0
+    # if len(original) != len(after_channel):
+    #     return 0
 
     total_bits = len(original)
     faulty_bits = 0

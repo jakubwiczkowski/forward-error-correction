@@ -13,13 +13,17 @@ from coder.triple.TripleCoder import TripleCoder
 from model import BinarySymmetricChannel
 from model import GilbertElliotModel
 
-binary_symmetric_channel_good_params = [0.000002]
+binary_symmetric_channel_good_params = [0.00002]
 binary_symmetric_channel_bad_params = [0.3]
-gilbert_elliot_model_good_params = [0.1, 0.8, 0.9, 0.005]
+gilbert_elliot_model_good_params = [0.01, 0.8, 0.9, 0.0005]
+# gilbert_elliot_model_bad_params = [0.03, 0.15, 0.3, 0.005]    #takie parametry wyplul chatGPT jako
+#                                                                udokumentowane przy badaniach w
+#                                                                transmisji pod wodą
 gilbert_elliot_model_bad_params = [0.3, 0.6, 0.5, 0.02]
 
+
 coders = [TripleCoder(), BCHCoder(mu=5, delta=7), BCHCoder(mu=4, delta=7), BCHCoder(10, 11),
-          ReedSolomonCoder(16), ReedSolomonCoder(64), ReedSolomonCoder(128)]
+          ReedSolomonCoder(16,1), ReedSolomonCoder(8,2), ReedSolomonCoder(64,2), ReedSolomonCoder(128,5), ReedSolomonCoder(8,1), ReedSolomonCoder(128,10), ReedSolomonCoder(128,7)]
 
 models = [BinarySymmetricChannel(*binary_symmetric_channel_good_params),
           BinarySymmetricChannel(*binary_symmetric_channel_bad_params),
@@ -29,7 +33,7 @@ models = [BinarySymmetricChannel(*binary_symmetric_channel_good_params),
 models.reverse()
 
 np.random.seed(int(time.time()))
-x = list(np.random.randint(2, size=1048576))
+# x = list(np.random.randint(2, size=1048576))
 
 output_directory = "output_files"
 if not os.path.exists(output_directory):
@@ -41,8 +45,8 @@ for coder in coders:
         filepath = os.path.join(output_directory,
                                 f"{coder.name()}_{coder.parameters().replace(' ', '').replace(';', '_')}_{count}.txt")
         with open(filepath, "a") as file:
-            for i in range(1):
-                x = list(np.random.randint(2, size=np.random.randint(1048576)))
+            for i in range(50):
+                x = list(np.random.randint(2, size=2048))
 
                 try:
                     encoded = coder.encode(x)
@@ -152,7 +156,7 @@ plt.figure(figsize=(10, 8))
 plt.scatter(x_BSC_bad, y_BSC_bad, color='red', label='BST Bad State')
 for i, txt in enumerate(titles_BSC_bad):
     plt.annotate(txt, (x_BSC_bad[i], y_BSC_bad[i]))
-plt.xlabel('Average BER')
+plt.xlabel('Average BER %')
 plt.ylabel('Average Exceed')
 plt.title('BST Bad State')
 plt.legend()
@@ -164,7 +168,7 @@ plt.figure(figsize=(10, 8))
 plt.scatter(x_Gilbert_good, y_Gilbert_good, color='blue', label='Gilbert-Elliot Good State')
 for i, txt in enumerate(titles_Gilbert_good):
     plt.annotate(txt, (x_Gilbert_good[i], y_Gilbert_good[i]))
-plt.xlabel('Average BER')
+plt.xlabel('Average BER %')
 plt.ylabel('Average Exceed')
 plt.title('Gilbert-Elliot Good State')
 plt.legend()
@@ -176,7 +180,7 @@ plt.figure(figsize=(10, 8))
 plt.scatter(x_Gilbert_bad, y_Gilbert_bad, color='orange', label='Gilbert-Elliot Bad State')
 for i, txt in enumerate(titles_Gilbert_bad):
     plt.annotate(txt, (x_Gilbert_bad[i], y_Gilbert_bad[i]))
-plt.xlabel('Average BER')
+plt.xlabel('Average BER %')
 plt.ylabel('Average Excess')
 plt.title('Gilbert-Elliot Bad State')
 plt.legend()

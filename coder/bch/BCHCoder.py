@@ -1,4 +1,5 @@
 import komm
+import numpy as np
 
 from coder.coder import Coder
 
@@ -10,20 +11,21 @@ class BCHCoder(Coder):
         self.decoder = komm.BlockDecoder(self.bch_code)
 
     def encode(self, data: list[int]) -> list[int]:
-        split_data = self.split_into_chunks(data, self.bch_code.dimension)
-        encoded_data = []
-        for chunk in split_data:
-            for bit in self.encoder(chunk):
-                encoded_data.append(bit)
-        return encoded_data
+        # split_data = self.split_into_chunks(data, self.bch_code.dimension)
+        # print(self.bch_code.dimension)
+        # encoded_data = []
+        # for chunk in split_data:
+        #     for bit in self.encoder(chunk):
+        #         encoded_data.append(bit)
+        return self.encoder(data).tolist()
 
     def decode(self, data: list[int]) -> list[int]:
-        split_data = self.split_into_chunks(data, self.bch_code.length)
-        decoded_data = []
-        for chunk in split_data:
-            for bit in self.decoder(chunk):
-                decoded_data.append(bit)
-        return decoded_data
+        # split_data = self.split_into_chunks(data, self.bch_code.length)
+        # decoded_data = []
+        # for chunk in split_data:
+        #     for bit in self.decoder(chunk):
+        #         decoded_data.append(bit)
+        return self.decoder(data).tolist()
 
     def split_into_chunks(self, target: list[int], n: int):
         num_chunks = -(-len(target) // n)  # Equivalent to ceil(len(lst) / n)

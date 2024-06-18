@@ -18,8 +18,7 @@ binary_symmetric_channel_bad_params = [0.3]
 gilbert_elliot_model_good_params = [0.1, 0.8, 0.9, 0.005]
 gilbert_elliot_model_bad_params = [0.3, 0.6, 0.5, 0.02]
 
-coders = [TripleCoder(), BCHCoder(mu=5, delta=7), BCHCoder(mu=4, delta=7), BCHCoder(10, 11),
-          ReedSolomonCoder(8, 16), ReedSolomonCoder(8, 64), ReedSolomonCoder(8, 128)]
+coders = [BCHCoder(mu=7, delta=15)]
 
 models = [BinarySymmetricChannel(*binary_symmetric_channel_good_params),
           BinarySymmetricChannel(*binary_symmetric_channel_bad_params),
@@ -86,7 +85,8 @@ for file_path in file_list:
             exceed.append(float(tokens[3]))
 
         canal_name = tokens[1]
-        coder_name = re.split(r'[\\.]', file_path)[1][:-2]
+        coder_name = re.split(r'[\\.]', file_path)[0][:-2]
+        coder_name = coder_name.replace("output_files/", "")
         average_ber = sum(ber) / len(ber)
         average_exceed = sum(exceed) / len(exceed)
         state = 0 if count_state % 2 == 0 else 1

@@ -1,4 +1,7 @@
 class Coder:
+    def prepare(self, data: list[int]) -> list[int]:
+        pass
+
     def encode(self, data: list[int]) -> list[int]:
         pass
 

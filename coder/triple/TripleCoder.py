@@ -5,6 +5,9 @@ class TripleCoder(Coder):
     def __init__(self):
         pass
 
+    def prepare(self, data: list[int]) -> list[int]:
+        return data
+
     def encode(self, data: list[int]) -> list[int]:
         output = list()
 

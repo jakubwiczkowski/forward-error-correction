@@ -10,6 +10,9 @@ class ReedSolomonCoder(Coder):
         self.rsc = RSCodec(value)
         pass
 
+    def prepare(self, data: list[int]) -> list[int]:
+        return data
+
     def encode(self, data: list[int]) -> list[int]:
         if len(data) % self.n != 0:
             data += [0] * (self.n - len(data) % self.n)

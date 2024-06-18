@@ -29,7 +29,6 @@ models = [BinarySymmetricChannel(*binary_symmetric_channel_good_params),
 models.reverse()
 
 np.random.seed(int(time.time()))
-x = list(np.random.randint(2, size=1024))
 
 output_directory = "output_files"
 if not os.path.exists(output_directory):
@@ -43,20 +42,21 @@ for coder in coders:
         with open(filepath, "a") as file:
             for i in range(1):
                 x = list(np.random.randint(2, size=np.random.randint(1024)))
+                prepared = coder.prepare(x)
 
                 try:
-                    encoded = coder.encode(x)
+                    encoded = coder.encode(prepared)
                 except Exception as e:
                     print(f"Error: {e}")
                     continue
 
                 output = channel.accept(encoded)
                 decoded = coder.decode(output)
-                if len(decoded) > len(x):
-                    decoded = decoded[:len(x)]
+                if len(decoded) > len(prepared):
+                    decoded = decoded[:len(prepared)]
 
                 try:
-                    ber = model.check_integrity(x, decoded)
+                    ber = model.check_integrity(prepared, decoded)
                 except Exception as e:
                     print(e)
                     continue

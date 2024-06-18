@@ -6,26 +6,24 @@ from coder.coder import Coder
 
 class BCHCoder(Coder):
     def __init__(self, mu: int, delta: int):
-        self.bch_code = komm.BCHCode(mu, delta)
+        parameter = mu
+        correcting_capability = delta
+        self.bch_code = komm.BCHCode(parameter, correcting_capability)
         self.encoder = komm.BlockEncoder(self.bch_code)
         self.decoder = komm.BlockDecoder(self.bch_code)
 
+    def prepare(self, data: list[int]) -> list[int]:
+        if len(data) % self.bch_code.dimension == 0:
+            return data
+
+        additional_zeros = self.bch_code.dimension - (len(data) % self.bch_code.dimension)
+        return np.append(data, [np.zeros(additional_zeros, dtype=np.uint8)]).tolist()
+
     def encode(self, data: list[int]) -> list[int]:
-        split_data = self.split_into_chunks(data, self.bch_code.dimension)
-        # print(self.bch_code.dimension)
-        encoded_data = []
-        for chunk in split_data:
-            for bit in self.encoder(chunk):
-                encoded_data.append(bit)
-        return encoded_data
+        return self.encoder(data).tolist()
 
     def decode(self, data: list[int]) -> list[int]:
-        split_data = self.split_into_chunks(data, self.bch_code.length)
-        decoded_data = []
-        for chunk in split_data:
-            for bit in self.decoder(chunk):
-                decoded_data.append(bit)
-        return decoded_data
+        return self.decoder(data).tolist()
 
     def split_into_chunks(self, target: list[int], n: int):
         num_chunks = -(-len(target) // n)  # Equivalent to ceil(len(lst) / n)

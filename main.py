@@ -18,8 +18,8 @@ binary_symmetric_channel_bad_params = [0.3]
 gilbert_elliot_model_good_params = [0.1, 0.8, 0.9, 0.005]
 gilbert_elliot_model_bad_params = [0.3, 0.6, 0.5, 0.02]
 
-coders = [TripleCoder(), BCHCoder(mu=5, delta=7), BCHCoder(mu=4, delta=7), BCHCoder(10, 11),
-          ReedSolomonCoder(8, 1), ReedSolomonCoder(8, 2), ReedSolomonCoder(8, 4)]
+coders = [TripleCoder(), BCHCoder(mu=7, delta=5), BCHCoder(mu=15, delta=11), BCHCoder(mu=15, delta=5),
+          ReedSolomonCoder(16, 1), ReedSolomonCoder(8, 2), ReedSolomonCoder(64, 2)]
 
 models = [BinarySymmetricChannel(*binary_symmetric_channel_good_params),
           BinarySymmetricChannel(*binary_symmetric_channel_bad_params),
@@ -40,32 +40,31 @@ for coder in coders:
         filepath = os.path.join(output_directory,
                                 f"{coder.name()}_{coder.parameters().replace(' ', '').replace(';', '_')}_{count}.txt")
         with open(filepath, "a") as file:
-            for i in range(1):
-                x = list(np.random.randint(2, size=np.random.randint(1024)))
-                prepared = coder.prepare(x)
+            x = list(np.random.randint(2, size=np.random.randint(1048576)))
+            prepared = coder.prepare(x)
 
-                try:
-                    encoded = coder.encode(prepared)
-                except Exception as e:
-                    print(f"Error: {e}")
-                    continue
+            try:
+                encoded = coder.encode(prepared)
+            except Exception as e:
+                print(f"Error: {e}")
+                continue
 
-                output = channel.accept(encoded)
-                decoded = coder.decode(output)
-                if len(decoded) > len(prepared):
-                    decoded = decoded[:len(prepared)]
+            output = channel.accept(encoded)
+            decoded = coder.decode(output)
+            if len(decoded) > len(prepared):
+                decoded = decoded[:len(prepared)]
 
-                try:
-                    ber = model.check_integrity(prepared, decoded)
-                except Exception as e:
-                    print(e)
-                    continue
+            try:
+                 ber = model.check_integrity(prepared, decoded)
+            except Exception as e:
+                print(e)
+                continue
 
-                excess = len(encoded) / len(x) * 100
+            excess = len(encoded) / len(x) * 100
 
-                save = (f"{coder.name()};{channel.name()}; {ber * 100}; {excess}; {coder.parameters()}; "
+            save = (f"{coder.name()};{channel.name()}; {ber * 100}; {excess}; {coder.parameters()}; "
                         f"{channel.parameters()}\n")
-                file.writelines(save)
+            file.writelines(save)
             count -= 1
             print('done')
 

@@ -59,7 +59,7 @@ for coder in coders:
                 print(e)
                 continue
 
-            excess = len(encoded) / len(x) * 100
+            excess = (len(encoded) / len(x) * 100) - 100
 
             save = (f"{coder.name()};{channel.name()}; {ber * 100}; {excess}; {coder.parameters()}; "
                     f"{channel.parameters()}\n")

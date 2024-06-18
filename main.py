@@ -18,7 +18,8 @@ binary_symmetric_channel_bad_params = [0.3]
 gilbert_elliot_model_good_params = [0.1, 0.8, 0.9, 0.005]
 gilbert_elliot_model_bad_params = [0.3, 0.6, 0.5, 0.02]
 
-coders = [TripleCoder(), BCHCoder(mu=7, delta=5), ReedSolomonCoder(16, 2)]
+coders = [TripleCoder(), BCHCoder(mu=5, delta=7), BCHCoder(mu=4, delta=7), BCHCoder(10, 11),
+          ReedSolomonCoder(8, 1), ReedSolomonCoder(8, 2), ReedSolomonCoder(8, 4)]
 
 models = [BinarySymmetricChannel(*binary_symmetric_channel_good_params),
           BinarySymmetricChannel(*binary_symmetric_channel_bad_params),
@@ -39,33 +40,34 @@ for coder in coders:
         filepath = os.path.join(output_directory,
                                 f"{coder.name()}_{coder.parameters().replace(' ', '').replace(';', '_')}_{count}.txt")
         with open(filepath, "a") as file:
-            x = list(np.random.randint(2, size=np.random.randint(1048576)))
-            prepared = coder.prepare(x)
+            for i in range(1):
+                x = list(np.random.randint(2, size=np.random.randint(1024)))
+                prepared = coder.prepare(x)
 
-            try:
-                encoded = coder.encode(prepared)
-            except Exception as e:
-                print(f"Error: {e}")
-                continue
+                try:
+                    encoded = coder.encode(prepared)
+                except Exception as e:
+                    print(f"Error: {e}")
+                    continue
 
-            output = channel.accept(encoded)
-            decoded = coder.decode(output)
-            if len(decoded) > len(prepared):
-                decoded = decoded[:len(prepared)]
+                output = channel.accept(encoded)
+                decoded = coder.decode(output)
+                if len(decoded) > len(prepared):
+                    decoded = decoded[:len(prepared)]
 
-            try:
-                ber = model.check_integrity(prepared, decoded)
-            except Exception as e:
-                print(e)
-                continue
+                try:
+                    ber = model.check_integrity(prepared, decoded)
+                except Exception as e:
+                    print(e)
+                    continue
 
-            excess = (len(encoded) / len(x) * 100) - 100
+                excess = len(encoded) / len(x) * 100
 
-            save = (f"{coder.name()};{channel.name()}; {ber * 100}; {excess}; {coder.parameters()}; "
-                    f"{channel.parameters()}\n")
-            file.writelines(save)
-        count -= 1
-        print('done')
+                save = (f"{coder.name()};{channel.name()}; {ber * 100}; {excess}; {coder.parameters()}; "
+                        f"{channel.parameters()}\n")
+                file.writelines(save)
+            count -= 1
+            print('done')
 
 # do zapisu: [nazwa kodera; nazwa_kanalu; nazwa bit error rate; nadmiar bitowy; parametry kanalu; parametry kodera]
 
@@ -84,10 +86,10 @@ for file_path in file_list:
             exceed.append(float(tokens[3]))
 
         canal_name = tokens[1]
-        coder_name = re.split(r'[\\.]', file_path)[0][:-2]
-        coder_name = coder_name.replace("output_files/", "")
+        print(file_path)
+        coder_name = re.split(r'[/.]', file_path)[1][:-2]
         average_ber = sum(ber) / len(ber)
-        average_exceed = sum(exceed) / len(exceed)
+        average_exceed = sum(exceed) / len(exceed) -100 # jezeli jest wiecej w 2 razy to jest wiecej w 100 procent a nie 200
         state = 0 if count_state % 2 == 0 else 1
         count_state += 1
 
@@ -97,6 +99,8 @@ for file_path in file_list:
                   'average exceed': average_exceed,
                   'state': state}
         results.append(result)
+
+        print(results)
 
 x_BSC_good = []
 x_BSC_bad = []
@@ -129,11 +133,6 @@ for result in results:
             titles_Gilbert_bad.append((result.get('coder name')))
             x_Gilbert_bad.append(result.get('average ber'))
             y_Gilbert_bad.append(result.get('average exceed'))
-
-print(x_BSC_good)
-print(x_BSC_bad)
-print(titles_BSC_good)
-print(titles_BSC_bad)
 
 # Plot BST Good State
 plt.figure(figsize=(10, 8))
@@ -185,3 +184,11 @@ plt.show()
 
 for file_path in file_list:
     os.remove(file_path)
+
+
+
+
+
+
+
+
